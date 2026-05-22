@@ -1,2 +1,2 @@
 # Learn Hub Personal 
-<h1>Check out the branches for each file view</h1>
+<h2>Check out the branches for each file view</h2>
