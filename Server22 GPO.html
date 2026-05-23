@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server22 GPO Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0e12;
+      --bg-elevated: #12151c;
+      --surface: #181c26;
+      --surface-2: #1e2433;
+      --border: #2a3344;
+      --border-soft: #222833;
+      --text: #eef2f8;
+      --muted: #8d9bb5;
+      --accent: #4f8cff;
+      --accent-glow: #4f8cff33;
+      --cat: #6366f1;
+      --section: #0ea5e9;
+      --policy: #64748b;
+      --tag-stig: #f59e0b;
+      --tag-dc: #a78bfa;
+      --tag-ms: #34d399;
+      --tag-manual: #94a3b8;
+      --path: #7dd3fc;
+      --reg: #f9a8d4;
+      --radius: 10px;
+      --shadow: 0 4px 24px #00000055;
+      --font: "DM Sans", "Segoe UI", system-ui, sans-serif;
+      --mono: "JetBrains Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, #4f8cff18, transparent),
+        radial-gradient(ellipse 40% 30% at 100% 0%, #6366f112, transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 1.25rem 3rem;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 -1.25rem;
+      padding: 1.5rem 1.25rem 1.1rem;
+      background: #0c0e12e6;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .brand {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--cat));
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    header .subtitle {
+      margin: 0.2rem 0 0;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    header .subtitle code {
+      font-family: var(--mono);
+      font-size: 0.8em;
+      padding: 0.1em 0.35em;
+      background: var(--surface);
+      border-radius: 4px;
+      color: var(--path);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      font: inherit;
+      font-size: 0.875rem;
+      padding: 0.55rem 0.85rem 0.55rem 2.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238d9bb5' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E") no-repeat 0.75rem center;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-wrap input::placeholder { color: var(--muted); }
+
+    .btn {
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background: var(--surface-2);
+      border-color: var(--accent);
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    main { padding-top: 1.25rem; }
+
+    .stats {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .stats strong { color: var(--text); font-weight: 600; }
+
+    /* Accordion tree */
+    .tree { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    details {
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    details[open] {
+      border-color: var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    details.cat {
+      background: var(--bg-elevated);
+      border-color: #6366f144;
+    }
+
+    details.cat[open] { border-color: #6366f166; }
+
+    details.section {
+      margin: 0.4rem 0.5rem;
+      background: var(--surface);
+      border-left: 3px solid var(--section);
+    }
+
+    details.policy {
+      margin: 0.3rem 0.4rem;
+      background: var(--bg);
+      border-left: 3px solid var(--policy);
+      font-size: 0.9rem;
+    }
+
+    details.policy[open] { border-left-color: var(--accent); }
+
+    details.hidden-match { display: none; }
+
+    summary {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+
+    summary:hover { background: #ffffff06; }
+
+    .chevron {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 6px;
+      background: var(--surface-2);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: transform 0.2s, background 0.15s;
+    }
+
+    .chevron::after {
+      content: "";
+      width: 0.4rem;
+      height: 0.4rem;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(-45deg) translate(-1px, -1px);
+    }
+
+    details[open] > summary .chevron {
+      background: var(--accent-glow);
+      transform: rotate(90deg);
+    }
+
+    details[open] > summary .chevron::after {
+      border-color: var(--accent);
+    }
+
+    .cat > summary { font-size: 1.05rem; padding: 0.9rem 1rem; }
+    .cat > summary .chevron { background: #6366f133; }
+    .cat > summary .chevron::after { border-color: var(--cat); }
+
+    .summary-text {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .summary-title { line-height: 1.35; }
+
+    .id-badge {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.15rem 0.45rem;
+      border-radius: 5px;
+      background: var(--surface-2);
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .cat .id-badge { background: #6366f122; color: #a5b4fc; }
+    .section .id-badge { background: #0ea5e922; color: #7dd3fc; }
+
+    .panel { padding: 0.25rem 0.35rem 0.5rem; }
+
+    /* Bullets */
+    .bullets {
+      list-style: none;
+      margin: 0;
+      padding: 0.35rem 0.65rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .bullets li {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+      font-size: 0.875rem;
+    }
+
+    .bullet-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+
+    .bullet-content {
+      word-break: break-word;
+      line-height: 1.45;
+    }
+
+    .bullets li.value {
+      background: #14532d22;
+      border-color: #22c55e44;
+    }
+    .bullets li.value .bullet-label { color: #4ade80; }
+    .bullets li.value .bullet-label::before {
+      content: "✓ ";
+      font-size: 0.85em;
+    }
+
+    .bullets li.path {
+      background: #0c4a6e18;
+      border-color: #0ea5e933;
+    }
+    .bullets li.path .bullet-label { color: var(--path); }
+    .bullets li.path .bullet-content {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #b8d4e8;
+    }
+
+    .bullets li.reg {
+      background: #83184318;
+      border-color: #ec489933;
+    }
+    .bullets li.reg .bullet-label { color: var(--reg); }
+    .bullets li.reg .bullet-content {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: #fbcfe8;
+    }
+
+    .bullets li.tag { background: #42200618; border-color: #f59e0b33; }
+    .bullets li.tag.tag-dc { background: #2e106522; border-color: #a78bfa44; }
+    .bullets li.tag.tag-dc .bullet-label { color: var(--tag-dc); }
+    .bullets li.tag.tag-ms { background: #064e3b22; border-color: #34d39944; }
+    .bullets li.tag.tag-ms .bullet-label { color: var(--tag-ms); }
+    .bullets li.tag.tag-manual { background: #1e293b; border-color: #64748b55; }
+    .bullets li.tag.tag-manual .bullet-label { color: var(--tag-manual); }
+    .bullets li.tag .bullet-label { color: var(--tag-stig); }
+
+    .note {
+      margin: 0.4rem 0.65rem 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border-left: 3px solid var(--muted);
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-style: italic;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+      display: none;
+    }
+
+    .no-results.visible { display: block; }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0 0.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">🛡</div>
+        <div>
+          <h1>Server22 GPO Reference</h1>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <input type="search" id="search" placeholder="Search policies…" autocomplete="off">
+        </div>
+        <button type="button" class="btn" id="expandAll">Expand all</button>
+        <button type="button" class="btn" id="collapseAll">Collapse all</button>
+      </div>
+    </header>
+    <main>
+      <p class="stats" id="stats"></p>
+      <div class="tree" id="app"></div>
+      <p class="no-results" id="noResults">No policies match your search.</p>
+    </main>
+    <footer>Windows Server 2022 · Group Policy reference</footer>
+  </div>
+
+  <script>
+    const NOTES = `
+# Account Policy 1
+
+## Password Policy 1.1
+### Password History 1.1.1
+- 24 or more password(s)
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Enforce password history
+### Maximum password age 1.1.2
+- 265 of fewer days, but not 0
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Maximum password age
+### Maximum password age (STIG) 1.1.3
+- 60 of fewer days, but not 0
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Maximum password age
+### Minimum password age 1.1.4
+- 1 or more day(s)
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Minimum password age
+### Minimum password length 1.1.5
+- 14 or more characters
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Minimum password length
+### Password must meet complexity requirements 1.1.6
+- Enabled
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Password must meet complexity requirements
+### Relax minimum password length limits 1.1.7
+- Enabled
+- HKLM\\System\\CurrentControlSet\\Control\\SAM:RelaxMinimumPasswordLengthLimits
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Relax minimum password length limits
+### Store passwords using reversible encryption 1.1.8
+- Disabled
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Password Policy\\Store passwords using reversible encryption
+
+## Account Lockout Policy 1.2
+### Account lockout duration 1.2.1
+- 15 or more minutes
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Account Lockout Policy\\Account lockout duration
+### Account lockout threshold 1.2.2
+- 5 or fewer invalid logon attempts, but not 0
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Account Lockout Policy\\Account lockout threshold
+### Account lockout threshold (STIG) 1.2.3
+- 3 or fewer invalid logon attempts, but not 0
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Account Lockout Policy\\Account lockout threshold
+### Allow Administrator account lockout 1.2.4
+- Enabled
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Account Lockout Policies\\Allow Administrator account lockout
+### Reset account lockout counter after 1.2.5
+- 15 or more minutes
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policies\\Account Lockout Policy\\Reset account lockout counter after
+
+## Kerberos Policy 1.3
+### Enforce user logon restrictions 1.3.1
+- STIG DC only
+- Manual
+- Enabled
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policy\\Kerberos Policy\\Enforce user logon restrictions
+### Maximum lifetime for service ticket 1.3.2
+- STIG DC only
+- Manual
+- 600 or fewer minutes, but not 0
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policy\\Kerberos Policy\\Maximum lifetime for service ticket
+### Maximum lifetime for user ticket 1.3.3
+- STIG DC only
+- Manual
+- 10 or fewer hours, but not 0
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policy\\Kerberos Policy\\Maximum lifetime for user ticket
+### Maximum lifetime for user ticket renewal 1.3.4
+- STIG DC only
+- Manual
+- 7 or fewer days
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policy\\Kerberos Policy\\Maximum lifetime for user ticket renewal
+### Maximum tolerance for computer clock synchronization 1.3.5
+- STIG DC only
+- Manual
+- 5 or fewer minutes
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Account Policy\\Kerberos Policy\\Maximum tolerance for computer clock synchronization
+
+# Local Policies 2
+## Audit Policy 2.1
+- This section is blank to simply maintain the structure of the document
+## User Rights Assignment 2.2
+### Access Credential Manager as a trusted caller 2.2.1
+- No one
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Access Credential Manager as a trusted caller
+### Access this computer from the network 2.2.2
+- Administrators, Authenticated Users, ENTERPRISE DOMAIN CONTROLLERS
+- DC only
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Access this computer from the network
+### Access this computer from the network 2.2.3
+- Administators, Authenticated Users
+- MS only
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Access this computer from the network
+### Act as part of the operating system 2.2.4
+- No one
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Act as part of the operating system
+### Add workstations to domain 2.2.5
+- DC only
+- Administrators
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Add workstations to domain
+### Adjust memory quotes for a process 2.2.6
+- Administrators, LOCAL SERVICE, NETWORK SERVICE
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Adjust memory quotas for a process
+### Allow log on locally 2.2.7
+- DC only
+- Administrators, ENTERPRISE DOMAIN CONTROLLERS
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Allow log on locally
+### Allow log on locally 2.2.8
+- MS only
+- Administrators
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Allow log on locally
+### Allow log on locally 2.2.9
+- STIG only
+- Administrators
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Allow log on locally
+### Allow log on through Remote Desktop Services 2.2.10
+- DC only
+- Administrators
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Allow log on through Remote Desktop Services
+### Allow log on through Remote Desktop Services 2.2.11
+- MS only
+- Administrators, Remote Desktop Users
+- Computer Configuration\\Policies\\Windows Settings\\Security Settings\\Local Policies\\User Rights Assignment\\Allow log on through Remote Desktop Services
+`;
+
+    const TAGS = {
+      "stig dc only": "tag-stig",
+      "stig only": "tag-stig",
+      "dc only": "tag-dc",
+      "ms only": "tag-ms",
+      "manual": "tag-manual"
+    };
+
+    const BULLET_ORDER = { value: 0, path: 1, reg: 2, tag: 3 };
+
+    const BULLET_LABELS = {
+      value: "Recommended state",
+      path: "GPO path",
+      reg: "Registry",
+      tag: "Scope / notes"
+    };
+
+    const TAG_BULLET_LABELS = {
+      "tag-stig": "Scope (STIG)",
+      "tag-dc": "Scope (domain controller)",
+      "tag-ms": "Scope (member server)",
+      "tag-manual": "Configuration note"
+    };
+
+    function bulletLabel(type, extra) {
+      if (type === "tag" && extra && TAG_BULLET_LABELS[extra]) {
+        return TAG_BULLET_LABELS[extra];
+      }
+      return BULLET_LABELS[type] || "Detail";
+    }
+
+    function esc(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function splitTitle(title) {
+      const m = title.match(/^(.+?)\s+(\d+(?:\.\d+)*)\s*$/);
+      return m ? { name: m[1], id: m[2] } : { name: title, id: "" };
+    }
+
+    function summaryHtml(title, level) {
+      const { name, id } = splitTitle(title);
+      const badge = id ? `<span class="id-badge">${esc(id)}</span>` : "";
+      return `<span class="chevron" aria-hidden="true"></span>
+        <span class="summary-text">
+          <span class="summary-title">${esc(name)}</span>${badge}
+        </span>`;
+    }
+
+    function classifyBullet(text) {
+      const lower = text.toLowerCase();
+      if (TAGS[lower]) return { type: "tag", extra: TAGS[lower] };
+      if (/^HKLM\\/i.test(text) || /^HKCU\\/i.test(text)) return { type: "reg" };
+      if (/^Computer Configuration\\/i.test(text)) return { type: "path" };
+      return { type: "value" };
+    }
+
+    function sortBullets(lines) {
+      return lines
+        .map((text, i) => ({ text, i, ...classifyBullet(text) }))
+        .sort((a, b) => (BULLET_ORDER[a.type] ?? 9) - (BULLET_ORDER[b.type] ?? 9) || a.i - b.i)
+        .map((row) => row.text);
+    }
+
+    function bulletsHtml(lines) {
+      if (!lines.length) return "";
+      const sorted = sortBullets(lines);
+      return `<ul class="bullets">${sorted.map((t) => {
+        const { type, extra } = classifyBullet(t);
+        const cls = extra ? `${type} ${extra}` : type;
+        const label = bulletLabel(type, extra);
+        return `<li class="${cls}">
+          <span class="bullet-label">${esc(label)}:</span>
+          <span class="bullet-content">${esc(t)}</span>
+        </li>`;
+      }).join("")}</ul>`;
+    }
+
+    function parseNotes(text) {
+      const cats = [];
+      let cat = null, section = null, policy = null;
+
+      function flushPolicy() {
+        if (!policy || !section) return;
+        section.items.push({ type: "policy", title: policy.title, lines: policy.lines });
+        policy = null;
+      }
+      function flushSection() {
+        flushPolicy();
+        if (!section || !cat) return;
+        cat.sections.push(section);
+        section = null;
+      }
+      function flushCat() {
+        flushSection();
+        if (!cat) return;
+        cats.push(cat);
+        cat = null;
+      }
+
+      for (const raw of text.split("\n")) {
+        const line = raw.trim();
+        if (!line) continue;
+
+        if (line.startsWith("# ")) {
+          flushCat();
+          cat = { title: line.slice(2).trim(), sections: [] };
+        } else if (line.startsWith("## ")) {
+          flushSection();
+          section = { title: line.slice(3).trim(), items: [] };
+        } else if (line.startsWith("### ")) {
+          flushPolicy();
+          policy = { title: line.slice(4).trim(), lines: [] };
+        } else if (line.startsWith("- ")) {
+          const text = line.slice(2);
+          if (policy) policy.lines.push(text);
+          else if (section) section.items.push({ type: "note", text });
+        }
+      }
+      flushCat();
+      return cats;
+    }
+
+    function render(data) {
+      let policyCount = 0;
+      const html = data.map((c) => `
+        <details class="cat" open data-search="${esc(c.title.toLowerCase())}">
+          <summary>${summaryHtml(c.title, "cat")}</summary>
+          <div class="panel">
+            ${c.sections.map((s) => `
+              <details class="section" data-search="${esc((c.title + " " + s.title).toLowerCase())}">
+                <summary>${summaryHtml(s.title, "section")}</summary>
+                <div class="panel">
+                  ${s.items.map((item) => {
+                    if (item.type === "note") {
+                      return `<p class="note">${esc(item.text)}</p>`;
+                    }
+                    policyCount++;
+                    const searchText = (c.title + " " + s.title + " " + item.title + " " + item.lines.join(" ")).toLowerCase();
+                    return `
+                      <details class="policy" data-search="${esc(searchText)}">
+                        <summary>${summaryHtml(item.title, "policy")}</summary>
+                        ${bulletsHtml(item.lines)}
+                      </details>`;
+                  }).join("")}
+                </div>
+              </details>
+            `).join("")}
+          </div>
+        </details>
+      `).join("");
+      return { html, policyCount };
+    }
+
+    const parsed = parseNotes(NOTES);
+    const { html, policyCount } = render(parsed);
+    const app = document.getElementById("app");
+    app.innerHTML = html;
+    document.getElementById("stats").innerHTML =
+      `<strong>${policyCount}</strong> policies · <strong>${parsed.length}</strong> categories`;
+
+    document.getElementById("expandAll").onclick = () =>
+      app.querySelectorAll("details").forEach((d) => { d.open = true; });
+    document.getElementById("collapseAll").onclick = () =>
+      app.querySelectorAll("details").forEach((d) => { d.open = false; });
+
+    document.getElementById("search").addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      let visible = 0;
+
+      app.querySelectorAll("details.policy").forEach((el) => {
+        const match = !q || el.dataset.search.includes(q);
+        el.classList.toggle("hidden-match", !match);
+        if (match) visible++;
+      });
+
+      app.querySelectorAll("details.section").forEach((el) => {
+        const hasPolicy = el.querySelector("details.policy:not(.hidden-match)");
+        const note = el.querySelector(".note");
+        const match = !q || el.dataset.search.includes(q) || hasPolicy || (note && note.textContent.toLowerCase().includes(q));
+        el.classList.toggle("hidden-match", !match);
+      });
+
+      app.querySelectorAll("details.cat").forEach((el) => {
+        const hasChild = el.querySelector("details.section:not(.hidden-match)");
+        const match = !q || el.dataset.search.includes(q) || hasChild;
+        el.classList.toggle("hidden-match", !match);
+        if (match && q) el.open = true;
+        if (hasChild && q) el.querySelectorAll("details.section:not(.hidden-match)").forEach((s) => { s.open = true; });
+      });
+
+      document.getElementById("noResults").classList.toggle("visible", q && visible === 0);
+    });
+  </script>
+</body>
+</html>
