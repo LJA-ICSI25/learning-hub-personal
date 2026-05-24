@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post-Quantum Cryptography Notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --bg-elevated: #10141c;
+      --surface: #161b28;
+      --surface-2: #1c2233;
+      --border: #2a3044;
+      --border-soft: #222838;
+      --text: #eef2f8;
+      --muted: #8d9bb5;
+      --accent: #a78bfa;
+      --accent-2: #22d3ee;
+      --accent-glow: #a78bfa33;
+      --cat: #c084fc;
+      --section: #22d3ee;
+      --topic: #64748b;
+      --radius: 10px;
+      --shadow: 0 4px 24px #00000055;
+      --font: "DM Sans", "Segoe UI", system-ui, sans-serif;
+      --mono: "JetBrains Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, #a78bfa20, transparent),
+        radial-gradient(ellipse 40% 30% at 0% 100%, #22d3ee12, transparent);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 1.25rem 3rem;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 0 -1.25rem;
+      padding: 1.5rem 1.25rem 1.1rem;
+      background: #0a0c10e6;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .brand {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .hub-link {
+      display: inline-flex;
+      margin-top: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .hub-link:hover { color: var(--accent); }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .search-wrap { flex: 1; min-width: 180px; }
+
+    .search-wrap input {
+      width: 100%;
+      font: inherit;
+      font-size: 0.875rem;
+      padding: 0.55rem 0.85rem 0.55rem 2.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238d9bb5'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E") no-repeat 0.75rem center;
+      color: var(--text);
+      outline: none;
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .btn {
+      font: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .btn:hover { border-color: var(--accent); background: var(--surface-2); }
+
+    main { padding-top: 1.25rem; }
+
+    .stats {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .stats strong { color: var(--text); }
+
+    .tree { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    details {
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    details[open] {
+      border-color: var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    details.cat {
+      background: var(--bg-elevated);
+      border-color: #a78bfa44;
+    }
+
+    details.section {
+      margin: 0.4rem 0.5rem;
+      border-left: 3px solid var(--section);
+    }
+
+    details.topic {
+      margin: 0.3rem 0.4rem;
+      background: var(--bg);
+      border-left: 3px solid var(--topic);
+      font-size: 0.92rem;
+    }
+
+    details.topic[open] { border-left-color: var(--accent); }
+
+    details.hidden-match { display: none; }
+
+    summary {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      user-select: none;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary:hover { background: #ffffff06; }
+
+    .chevron {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 6px;
+      background: var(--surface-2);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    .chevron::after {
+      content: "";
+      width: 0.4rem;
+      height: 0.4rem;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(-45deg) translate(-1px, -1px);
+    }
+
+    details[open] > summary .chevron {
+      background: var(--accent-glow);
+      transform: rotate(90deg);
+    }
+
+    details[open] > summary .chevron::after { border-color: var(--accent); }
+
+    .cat > summary .chevron { background: #a78bfa33; }
+    .cat > summary .chevron::after { border-color: var(--cat); }
+
+    .summary-text { flex: 1; min-width: 0; }
+
+    .panel { padding: 0.25rem 0.35rem 0.55rem; }
+
+    .note-bullets {
+      list-style: none;
+      margin: 0;
+      padding: 0.35rem 0.65rem 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .note-bullets .note-bullets {
+      margin-top: 0.35rem;
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--border-soft);
+    }
+
+    .note-bullets > li {
+      padding: 0.55rem 0.7rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border-soft);
+    }
+
+    .note-bullets .note-bullets > li {
+      background: var(--bg);
+      font-size: 0.9rem;
+    }
+
+    .note-bullets .note-bullets .note-bullets > li {
+      background: var(--surface-2);
+      font-size: 0.88rem;
+    }
+
+    .bullet-point {
+      margin: 0;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+
+    .bullet-point.is-detail {
+      padding-top: 0.15rem;
+      font-size: 0.85rem;
+      color: #c4b5fd;
+      font-style: italic;
+    }
+
+    .section-intro {
+      margin: 0.4rem 0.65rem 0.25rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border-left: 3px solid var(--section);
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+    }
+
+    .no-results.visible { display: block; }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0 0.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">⚛</div>
+        <div>
+          <h1>Post-Quantum Cryptography</h1>
+          <a class="hub-link" href="index.html">← Personal Notes Hub</a>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap">
+          <input type="search" id="search" placeholder="Search notes…" autocomplete="off">
+        </div>
+        <button type="button" class="btn" id="expandAll">Expand all</button>
+        <button type="button" class="btn" id="collapseAll">Collapse all</button>
+      </div>
+    </header>
+    <main>
+      <p class="stats" id="stats"></p>
+      <div class="tree" id="app"></div>
+      <p class="no-results" id="noResults">No notes match your search.</p>
+    </main>
+    <footer><a href="index.html" style="color:inherit">Hub</a> · Quantum computing notes</footer>
+  </div>
+
+  <script>
+    // ========== EDIT HERE — same format as your .md notes ==========
+    // # Category   ## Section   ### Topic (optional)   - bullets (indent with 4 spaces to nest)
+    const NOTES = `
+# Going from Zero to Quantum Computing
+
+## What is Quantum Computing and Why does it matter?
+- A form of computing that uses Qubits instead of normal bits
+- More effective on complex topics and simulations
+
+- In classic computing, they use bits
+    - Bits are given 2 possible states
+        - 0
+        - 1
+    - Even supercomputers use this same process and logic as the first computers
+
+- In Quantum Computing, they use Qubits
+    - Due to how quatum particals work, they are able to consider every possible outcome from the start
+    - They work with probabilites rather than binaries
+        - More specifically, superposition
+        - (At the quantum level, physical systems can exist in multiple states at the same time. Until the system is observed or measured, the system occupies all positions at once. This central principle of quantum mechanics allows quantum computers to work with the potential of the system, where all possible outcomes exist in a computation simulta- neously. In the case of quantum computing, the systems used can be photons, trapped ions, atoms, or quasi-particles.)
+    - This process allow it to create simulations and problems far to complex for normal or even supercomputers
+`;
+
+    function esc(s) {
+      return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function isDetail(text) {
+      return text.startsWith("(") || text.length > 120;
+    }
+
+    function treeSearchText(tree) {
+      return tree.map((n) => n.text + " " + treeSearchText(n.children)).join(" ").trim();
+    }
+
+    function renderBulletTree(tree) {
+      if (!tree.length) return "";
+      return `<ul class="note-bullets">${tree.map((n) => `
+        <li>
+          <p class="bullet-point${isDetail(n.text) ? " is-detail" : ""}">${esc(n.text)}</p>
+          ${renderBulletTree(n.children)}
+        </li>
+      `).join("")}</ul>`;
+    }
+
+    function parseNotes(text) {
+      const cats = [];
+      let cat = null;
+      let section = null;
+      let topic = null;
+      let bulletStack = [];
+
+      function currentTree() {
+        if (topic) return topic.tree;
+        if (section) return section.pendingTree;
+        return null;
+      }
+
+      function addBullet(level, bulletText) {
+        const tree = currentTree();
+        if (!tree) return;
+        const node = { text: bulletText, children: [] };
+        if (level === 0) {
+          tree.push(node);
+          bulletStack = [node];
+        } else {
+          while (bulletStack.length > level) bulletStack.pop();
+          if (bulletStack[level - 1]) bulletStack[level - 1].children.push(node);
+          bulletStack[level] = node;
+        }
+      }
+
+      function flushTopic() {
+        if (!topic || !section) return;
+        section.items.push({ type: "topic", title: topic.title, tree: topic.tree });
+        topic = null;
+        bulletStack = [];
+      }
+
+      function flushPendingBullets() {
+        if (!section || !section.pendingTree.length) return;
+        section.items.push({ type: "bullets", tree: section.pendingTree });
+        section.pendingTree = [];
+        bulletStack = [];
+      }
+
+      function flushSection() {
+        flushTopic();
+        flushPendingBullets();
+        if (!section || !cat) return;
+        cat.sections.push(section);
+        section = null;
+      }
+
+      function flushCat() {
+        flushSection();
+        if (!cat) return;
+        cats.push(cat);
+        cat = null;
+      }
+
+      for (const raw of text.split("\n")) {
+        const trimmed = raw.trim();
+        if (!trimmed) continue;
+
+        if (trimmed.startsWith("# ")) {
+          flushCat();
+          cat = { title: trimmed.slice(2).trim(), sections: [] };
+        } else if (trimmed.startsWith("## ")) {
+          flushSection();
+          section = { title: trimmed.slice(3).trim(), items: [], pendingTree: [] };
+        } else if (trimmed.startsWith("### ")) {
+          flushTopic();
+          flushPendingBullets();
+          topic = { title: trimmed.slice(4).trim(), tree: [] };
+        } else {
+          const bulletMatch = raw.match(/^(\s*)- (.+)$/);
+          if (!bulletMatch) continue;
+          const indent = bulletMatch[1].length;
+          const level = indent === 0 ? 0 : Math.floor(indent / 4);
+          const bulletText = bulletMatch[2].trim();
+          if (topic) addBullet(level, bulletText);
+          else if (section) addBullet(level, bulletText);
+        }
+      }
+
+      flushCat();
+      return cats;
+    }
+
+    function summaryHtml(title) {
+      return `<span class="chevron" aria-hidden="true"></span>
+        <span class="summary-text">${esc(title)}</span>`;
+    }
+
+    function countBullets(tree) {
+      return tree.reduce((n, node) => n + 1 + countBullets(node.children), 0);
+    }
+
+    function render(data) {
+      let sectionCount = 0;
+      let bulletCount = 0;
+
+      const html = data.map((c) => {
+        const catSearch = c.title.toLowerCase();
+        return `
+        <details class="cat" open data-search="${esc(catSearch)}">
+          <summary>${summaryHtml(c.title)}</summary>
+          <div class="panel">
+            ${c.sections.map((s) => {
+              sectionCount++;
+              let sectionSearch = (c.title + " " + s.title).toLowerCase();
+              s.items.forEach((item) => {
+                if (item.tree) {
+                  sectionSearch += " " + treeSearchText(item.tree);
+                  bulletCount += countBullets(item.tree);
+                }
+              });
+
+              return `
+              <details class="section" data-search="${esc(sectionSearch.toLowerCase())}">
+                <summary>${summaryHtml(s.title)}</summary>
+                <div class="panel">
+                  ${s.items.map((item) => {
+                    if (item.type === "bullets") {
+                      return renderBulletTree(item.tree);
+                    }
+                    if (item.type === "topic") {
+                      const topicSearch = (sectionSearch + " " + item.title + " " + treeSearchText(item.tree)).toLowerCase();
+                      return `
+                        <details class="topic" data-search="${esc(topicSearch)}">
+                          <summary>${summaryHtml(item.title)}</summary>
+                          <div class="panel">${renderBulletTree(item.tree)}</div>
+                        </details>`;
+                    }
+                    return "";
+                  }).join("")}
+                </div>
+              </details>`;
+            }).join("")}
+          </div>
+        </details>`;
+      }).join("");
+
+      return { html, sectionCount, bulletCount };
+    }
+
+    const parsed = parseNotes(NOTES);
+    const { html, sectionCount, bulletCount } = render(parsed);
+    const app = document.getElementById("app");
+    app.innerHTML = html;
+    document.getElementById("stats").innerHTML =
+      `<strong>${sectionCount}</strong> section${sectionCount === 1 ? "" : "s"} · <strong>${bulletCount}</strong> points · <strong>${parsed.length}</strong> topic${parsed.length === 1 ? "" : "s"}`;
+
+    document.getElementById("expandAll").onclick = () =>
+      app.querySelectorAll("details").forEach((d) => { d.open = true; });
+    document.getElementById("collapseAll").onclick = () =>
+      app.querySelectorAll("details").forEach((d) => { d.open = false; });
+
+    document.getElementById("search").addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      let visibleTopics = 0;
+
+      app.querySelectorAll("details.topic").forEach((el) => {
+        const match = !q || el.dataset.search.includes(q);
+        el.classList.toggle("hidden-match", !match);
+        if (match) visibleTopics++;
+      });
+
+      app.querySelectorAll("details.section").forEach((el) => {
+        const hasTopic = el.querySelector("details.topic:not(.hidden-match)");
+        const match = !q || el.dataset.search.includes(q) || hasTopic;
+        el.classList.toggle("hidden-match", !match);
+        if (match && q) el.open = true;
+      });
+
+      app.querySelectorAll("details.cat").forEach((el) => {
+        const hasSection = el.querySelector("details.section:not(.hidden-match)");
+        const match = !q || el.dataset.search.includes(q) || hasSection;
+        el.classList.toggle("hidden-match", !match);
+        if (match && q) el.open = true;
+      });
+
+      const hasSections = app.querySelectorAll("details.section:not(.hidden-match)").length;
+      document.getElementById("noResults").classList.toggle("visible", q && !hasSections);
+    });
+  </script>
+</body>
+</html>
